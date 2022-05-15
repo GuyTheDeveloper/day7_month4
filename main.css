@@ -1,0 +1,8 @@
+.task-done > .text {
+  color: red;
+  text-decoration: line-through;
+}
+
+.task-done {
+  background-color: rgb(164, 172, 172);
+}

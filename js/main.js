@@ -1,6 +1,7 @@
 import mainArr from "./../api/task.js";
 import * as library from "./helper/library.js";
 
+let form = document.getElementById("form");
 let database = window.localStorage;
 let data = JSON.parse(database.getItem("todos"))
   ? JSON.parse(database.getItem("todos"))
@@ -10,6 +11,10 @@ console.log(data);
 let mainList = document.querySelector(".list-group");
 let todoText = document.querySelector(".text-todo");
 let todoMaker = document.querySelector(".btn-add");
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+});
 
 todoMaker.addEventListener("click", () => {
   if (todoText.value.trim().length < 3) {
@@ -38,7 +43,7 @@ data.forEach((todo) => {
 
 mainList.addEventListener("click", (event) => {
   let clickedNode = event.target;
-  console.log(clickedNode);
+  // console.log(clickedNode);
 
   if (!mainList.contains(clickedNode)) return;
 
@@ -51,8 +56,58 @@ mainList.addEventListener("click", (event) => {
       data = data.filter((todo) => {
         return todo.id != deleted.dataset.id;
       });
-      database.setItem("todos", JSON.stringify(data));
-      deleted.remove();
+
+      library.render(data, mainList);
+      break;
+
+    case "edit":
+      let editedNode = clickedNode.parentNode.parentNode;
+      let taskText = editedNode.childNodes[1].textContent;
+      let taskId = editedNode.dataset.id;
+      console.log(taskText, taskId);
+
+      editInp.dataset.id = taskId;
+      editInp.value = taskText;
+      break;
+
+    case "check":
+      let checkedNode = clickedNode.parentNode;
+
+      checkedNode.classList.toggle("task-done");
+
+      data = data.map((todo) => {
+        if (todo.id == checkedNode.dataset.id) {
+          todo.isDone = !todo.isDone;
+        }
+
+        return todo;
+      });
+
+      library.render(data, mainList);
+      // console.log(checkedNode);
       break;
   }
 });
+
+formTodo.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  let newTodo = editTodo.value.trim();
+  let todoId = editTodo.dataset.id;
+
+  if (newTodo.lenght < 3) {
+    alert("ko'proq matn kiriting");
+    return;
+  }
+
+  data = data.map((todo) => {
+    if (todo.id == todoId) {
+      todo.text = newTodo;
+    }
+
+    return todo;
+  });
+
+  library.render(data, mainList);
+});
+//Work isDONE = true; Credits to owner : GuyTheDeveloper
